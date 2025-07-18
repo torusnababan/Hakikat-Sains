@@ -1,0 +1,719 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IPA: Hakikat Ilmu Sains & Metode Ilmiah</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+        .header-main-title {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h1 {
+            color: #0056b3;
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .author-info {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .author-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .author-info p:first-child {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+        .header-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            z-index: 10;
+        }
+        .left-header-image {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            z-index: 10;
+        }
+        h2 {
+            color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        #timeLimitDisplay {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 50px;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .cooldown-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #d9534f;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #d9534f;
+            border-radius: 5px;
+            background-color: #ffe0e0;
+        }
+        @media (max-width: 600px) {
+            .header-image, .left-header-image {
+                position: static;
+                margin: 10px auto;
+                display: block;
+            }
+            .header-main-title, .author-info {
+                text-align: center;
+            }
+            .container {
+                position: static;
+            }
+            #timeLimitDisplay {
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-main-title">
+            <h1>Hakikat Ilmu Sains & Metode Ilmiah</h1>
+        </div>
+        <div class="author-info">
+            <p>By. Torus Manuntun Nababan, S.Pd.,M.Pd</p>
+            <p>(Pengembang Soal Kuis)</p>
+        </div>
+        <img src="logo.png" alt="Foto Torus Manuntun Nababan, S.Pd.,M.Pd" class="header-image">
+        <img src="jas.jpg" alt="Ilustrasi Jas" class="left-header-image">
+
+        <p id="timeLimitDisplay">Waktu pengerjaan: <span id="timeLimit">40</span> menit</p>
+        <div id="timer">Waktu tersisa: 40:00</div>
+
+        <form id="quizForm">
+            <h2>Identitas Siswa</h2>
+            <div class="form-group">
+                <label for="sekolah">Nama Sekolah:</label>
+                <input type="text" id="sekolah" name="sekolah" required>
+            </div>
+            <div class="form-group">
+                <label for="nama">Nama Siswa:</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" name="kelas" required>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <select id="semester" name="semester" required>
+                    <option value="">Pilih Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tahunAjaran">Tahun Ajaran:</label>
+                <input type="text" id="tahunAjaran" name="tahunAjaran" placeholder="Contoh: 2024/2025" required>
+            </div>
+
+            <hr>
+
+            <h2>Soal Kuis</h2>
+            <div id="questionsContainer">
+            </div>
+
+            <button type="submit">Selesai Kuis</button>
+        </form>
+
+        <div id="results">
+            <h2>Hasil Kuis</h2>
+            <p><strong>Nama Siswa:</strong> <span id="resultNama"></span></p>
+            <p><strong>Skor Anda:</strong> <span id="score"></span></p>
+            <p id="message"></p>
+            <h3>Detail Jawaban:</h3>
+            <div id="answerDetails">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Apa itu Sains (5 soal)
+            {
+                topic: "Apa itu Sains",
+                question: "Sains adalah cara untuk memahami dunia di sekitar kita melalui...",
+                options: ["Opini pribadi", "Percobaan dan pengamatan", "Cerita rakyat", "Kepercayaan saja"],
+                answer: "Percobaan dan pengamatan"
+            },
+            {
+                topic: "Apa itu Sains",
+                question: "Orang yang melakukan penelitian ilmiah untuk mencari pengetahuan baru disebut...",
+                options: ["Penyair", "Seniman", "Ilmuwan", "Politikus"],
+                answer: "Ilmuwan"
+            },
+            {
+                topic: "Apa itu Sains",
+                question: "Salah satu ciri utama sains adalah bersifat ____, yang berarti dapat diuji ulang oleh siapa saja.",
+                options: ["Subjektif", "Objektif", "Imaginatif", "Personal"],
+                answer: "Objektif"
+            },
+            {
+                topic: "Apa itu Sains",
+                question: "Pengetahuan dalam sains diperoleh melalui proses yang sistematis, yang dikenal sebagai...",
+                options: ["Diskusi kelompok", "Metode ilmiah", "Debat kusir", "Penerawangan"],
+                answer: "Metode ilmiah"
+            },
+            {
+                topic: "Apa itu Sains",
+                question: "Cabang ilmu sains yang mempelajari tentang makhluk hidup adalah...",
+                options: ["Fisika", "Kimia", "Biologi", "Geologi"],
+                answer: "Biologi"
+            },
+
+            // Penerapan Cabang Sains (10 soal)
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Seorang dokter menggunakan ilmu biologi untuk memahami tubuh manusia. Ini adalah contoh penerapan sains dalam bidang...",
+                options: ["Fisika", "Kimia", "Biologi", "Astronom"],
+                answer: "Biologi"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Ilmu fisika diterapkan dalam pembuatan mobil balap untuk memahami prinsip...",
+                options: ["Fotosintesis", "Gaya dan gerak", "Reaksi kimia", "Struktur batuan"],
+                answer: "Gaya dan gerak"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Seorang ahli kimia bekerja di laboratorium untuk mengembangkan obat-obatan baru. Ini adalah contoh penerapan sains dalam bidang...",
+                options: ["Biologi", "Fisika", "Kimia", "Ekologi"],
+                answer: "Kimia"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Studi tentang gempa bumi dan gunung berapi merupakan bagian dari ilmu...",
+                options: ["Meteorologi", "Oseanografi", "Geologi", "Botani"],
+                answer: "Geologi"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Penelitian tentang planet, bintang, dan galaksi termasuk dalam cabang ilmu...",
+                options: ["Biologi", "Fisika", "Astronomi", "Geologi"],
+                answer: "Astronomi"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Penerapan ilmu sains dalam profesi arsitek adalah untuk memastikan bangunan memiliki struktur yang kuat dan aman berdasarkan prinsip...",
+                options: ["Biologi", "Fisika", "Ekologi", "Kimia"],
+                answer: "Fisika"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Cabang ilmu sains yang mempelajari interaksi antara makhluk hidup dan lingkungannya adalah...",
+                options: ["Geologi", "Astronomi", "Ekologi", "Biologi"],
+                answer: "Ekologi"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Seorang polisi mungkin menggunakan ilmu forensik (cabang ilmu kimia dan biologi) untuk...",
+                options: ["Mengukur tinggi badan tersangka", "Menganalisis sidik jari di TKP", "Mencatat cuaca", "Membuat rencana kota"],
+                answer: "Menganalisis sidik jari di TKP"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Penciptaan suara dan harmonisasi dalam musik tidak lepas dari prinsip-prinsip sains, terutama cabang...",
+                options: ["Kimia", "Fisika (akustik)", "Geologi", "Biologi"],
+                answer: "Fisika (akustik)"
+            },
+            {
+                topic: "Penerapan Cabang Sains",
+                question: "Bidang ilmu yang mempelajari tentang cuaca dan iklim adalah...",
+                options: ["Geologi", "Meteorologi", "Oseanografi", "Astronomi"],
+                answer: "Meteorologi"
+            },
+
+            // Alat Laboratorium (5 soal)
+            {
+                topic: "Alat Laboratorium",
+                question: "Alat yang digunakan untuk mengukur volume cairan dengan akurat di laboratorium adalah...",
+                options: ["Gelas beaker", "Erlenmeyer", "Pipet ukur", "Cawan petri"],
+                answer: "Pipet ukur"
+            },
+            {
+                topic: "Alat Laboratorium",
+                question: "Untuk memanaskan zat cair dalam jumlah besar di laboratorium, alat yang sering digunakan adalah...",
+                options: ["Tabung reaksi", "Gelas ukur", "Gelas beaker", "Corong pisah"],
+                answer: "Gelas beaker"
+            },
+            {
+                topic: "Alat Laboratorium",
+                question: "Alat yang digunakan untuk mengukur suhu larutan dalam percobaan adalah...",
+                options: ["Stopwatch", "Neraca Ohaus", "Termometer", "Mikroskop"],
+                answer: "Termometer"
+            },
+            {
+                topic: "Alat Laboratorium",
+                question: "Untuk mencampur dan memanaskan sejumlah kecil zat kimia, alat yang paling cocok adalah...",
+                options: ["Gelas ukur", "Corong", "Tabung reaksi", "Pipet tetes"],
+                answer: "Tabung reaksi"
+            },
+            {
+                topic: "Alat Laboratorium",
+                question: "Alat yang berfungsi untuk mengukur massa benda dengan sangat teliti di laboratorium adalah...",
+                options: ["Timbangan dapur", "Neraca Ohaus", "Jangka sorong", "Meteran"],
+                answer: "Neraca Ohaus"
+            },
+
+            // Merancang Percobaan (5 soal)
+            {
+                topic: "Merancang Percobaan",
+                question: "Langkah pertama dalam merancang percobaan ilmiah adalah...",
+                options: ["Mengumpulkan data", "Merumuskan hipotesis", "Menarik kesimpulan", "Melakukan pengamatan"],
+                answer: "Melakukan pengamatan"
+            },
+            {
+                topic: "Merancang Percobaan",
+                question: "Variabel yang diubah atau dimanipulasi oleh peneliti dalam suatu percobaan disebut variabel...",
+                options: ["Terikat", "Kontrol", "Bebas", "Konstan"],
+                answer: "Bebas"
+            },
+            {
+                topic: "Merancang Percobaan",
+                question: "Dalam percobaan, faktor yang dijaga agar tetap sama untuk semua kelompok perlakuan disebut variabel...",
+                options: ["Bebas", "Terikat", "Kontrol", "Independent"],
+                answer: "Kontrol"
+            },
+            {
+                topic: "Merancang Percobaan",
+                question: "Hipotesis adalah dugaan awal yang harus diuji melalui...",
+                options: ["Debat", "Pengamatan saja", "Eksperimen", "Voting"],
+                answer: "Eksperimen"
+            },
+            {
+                topic: "Merancang Percobaan",
+                question: "Variabel yang diamati dan diukur sebagai respons terhadap perubahan variabel bebas disebut variabel...",
+                options: ["Bebas", "Terikat", "Kontrol", "Tidak relevan"],
+                answer: "Terikat"
+            },
+
+            // Pengamatan (5 soal)
+            {
+                topic: "Pengamatan",
+                question: "Pengamatan adalah proses mengumpulkan informasi menggunakan...",
+                options: ["Perasaan saja", "Intuisi", "Panca indra", "Ramalan"],
+                answer: "Panca indra"
+            },
+            {
+                topic: "Pengamatan",
+                question: "Data kualitatif adalah data yang dideskripsikan menggunakan kata-kata, contohnya adalah...",
+                options: ["Suhu air 25°C", "Tinggi pohon 10 meter", "Warna daun hijau", "Massa batu 500 gram"],
+                answer: "Warna daun hijau"
+            },
+            {
+                topic: "Pengamatan",
+                question: "Data kuantitatif adalah data yang berupa angka dan dapat diukur, contohnya adalah...",
+                options: ["Rasa makanan enak", "Tekstur kain lembut", "Panjang meja 1,5 meter", "Bau bunga harum"],
+                answer: "Panjang meja 1,5 meter"
+            },
+            {
+                topic: "Pengamatan",
+                question: "Saat melakukan pengamatan, penting untuk mencatat semua detail dengan...",
+                options: ["Tergesa-gesa", "Acak", "Akurat dan sistematis", "Hanya yang menarik saja"],
+                answer: "Akurat dan sistematis"
+            },
+            {
+                topic: "Pengamatan",
+                question: "Membuat gambar atau sketsa dari objek yang diamati dapat membantu dalam...",
+                options: ["Menarik perhatian", "Meningkatkan daya ingat", "Mendokumentasikan pengamatan", "Membuat cerita"],
+                answer: "Mendokumentasikan pengamatan"
+            },
+
+            // Besaran dan Satuan (5 soal)
+            {
+                topic: "Besaran dan Satuan",
+                question: "Sesuatu yang dapat diukur dan memiliki nilai serta satuan disebut...",
+                options: ["Angka", "Objek", "Besaran", "Kualitas"],
+                answer: "Besaran"
+            },
+            {
+                topic: "Besaran dan Satuan",
+                question: "Satuan Internasional (SI) untuk panjang adalah...",
+                options: ["Sentimeter", "Kilometer", "Meter", "Inci"],
+                answer: "Meter"
+            },
+            {
+                topic: "Besaran dan Satuan",
+                question: "Contoh besaran pokok adalah...",
+                options: ["Luas", "Volume", "Massa", "Kecepatan"],
+                answer: "Massa"
+            },
+            {
+                topic: "Besaran dan Satuan",
+                question: "Besaran turunan adalah besaran yang diturunkan dari besaran pokok. Contoh besaran turunan adalah...",
+                options: ["Waktu", "Suhu", "Arus listrik", "Luas"],
+                answer: "Luas"
+            },
+            {
+                topic: "Besaran dan Satuan",
+                question: "Satuan SI untuk waktu adalah...",
+                options: ["Jam", "Menit", "Detik", "Hari"],
+                answer: "Detik"
+            },
+
+            // Sejarah Pengukuran (5 soal)
+            {
+                topic: "Sejarah Pengukuran",
+                question: "Dahulu kala, orang sering menggunakan bagian tubuh seperti 'hasta' atau 'depa' untuk mengukur panjang. Mengapa metode ini tidak akurat?",
+                options: ["Karena terlalu lambat", "Ukuran bagian tubuh setiap orang berbeda", "Tidak bisa digunakan untuk benda kecil", "Hanya bisa digunakan di siang hari"],
+                answer: "Ukuran bagian tubuh setiap orang berbeda"
+            },
+            {
+                topic: "Sejarah Pengukuran",
+                question: "Pengukuran massa pada zaman dahulu sering menggunakan perbandingan dengan benda-benda standar, misalnya...",
+                options: ["Jumlah langkah", "Butir biji-bijian", "Panjang tali", "Warna benda"],
+                answer: "Butir biji-bijian"
+            },
+            {
+                topic: "Sejarah Pengukuran",
+                question: "Untuk mengukur waktu, masyarakat kuno sering menggunakan benda-benda alam seperti...",
+                options: ["Arah angin", "Gerak matahari dan bulan", "Warna awan", "Suara hewan"],
+                answer: "Gerak matahari dan bulan"
+            },
+            {
+                topic: "Sejarah Pengukuran",
+                question: "Sistem Satuan Internasional (SI) dikembangkan untuk...",
+                options: ["Membuat pengukuran lebih sulit", "Menyeragamkan pengukuran di seluruh dunia", "Hanya digunakan di satu negara", "Mengganti semua alat ukur tradisional"],
+                answer: "Menyeragamkan pengukuran di seluruh dunia"
+            },
+            {
+                topic: "Sejarah Pengukuran",
+                question: "Standar pengukuran 'meter' saat ini didefinisikan berdasarkan...",
+                options: ["Panjang kaki raja", "Satu per sepuluh juta bagian dari jarak Kutub Utara ke Khatulistiwa", "Kecepatan cahaya dalam ruang hampa", "Panjang tongkat tertentu"],
+                answer: "Kecepatan cahaya dalam ruang hampa"
+            },
+
+            // Teknik Pengukuran yang Benar (5 soal)
+            {
+                topic: "Teknik Pengukuran",
+                question: "Saat mengukur panjang dengan mistar, mata harus berada pada posisi...",
+                options: ["Di atas skala", "Di bawah skala", "Tegak lurus dengan skala", "Miring dari skala"],
+                answer: "Tegak lurus dengan skala"
+            },
+            {
+                topic: "Teknik Pengukuran",
+                question: "Sebelum melakukan pengukuran menggunakan alat ukur digital, langkah pertama yang harus dilakukan adalah...",
+                options: ["Langsung mengukur", "Mencatat hasil", "Melakukan kalibrasi (zeroing)", "Menekan tombol on/off berulang kali"],
+                answer: "Melakukan kalibrasi (zeroing)"
+            },
+            {
+                topic: "Teknik Pengukuran",
+                question: "Pengukuran yang berulang kali dan mendapatkan hasil yang konsisten menunjukkan adanya ____ yang baik.",
+                options: ["Kecepatan", "Akurasi", "Presisi", "Kesenangan"],
+                answer: "Presisi"
+            },
+            {
+                topic: "Teknik Pengukuran",
+                question: "Jika hasil pengukuran sangat dekat dengan nilai sebenarnya, pengukuran tersebut memiliki ____ yang tinggi.",
+                options: ["Ketidakpastian", "Presisi", "Akurasi", "Variasi"],
+                answer: "Akurasi"
+            },
+            {
+                topic: "Teknik Pengukuran",
+                question: "Untuk menghindari kesalahan paralaks saat membaca skala pada alat ukur analog, kita harus...",
+                options: ["Membaca dari samping", "Membaca dari atas", "Membaca dari bawah", "Membaca tegak lurus dengan skala"],
+                answer: "Membaca tegak lurus dengan skala"
+            },
+
+            // Membuat Hipotesis atau Kesimpulan (5 soal)
+            {
+                topic: "Hipotesis dan Kesimpulan",
+                question: "Hipotesis yang baik harus bersifat...",
+                options: ["Tidak dapat diuji", "Berdasarkan opini", "Dapat diuji dan spesifik", "Selalu benar"],
+                answer: "Dapat diuji dan spesifik"
+            },
+            {
+                topic: "Hipotesis dan Kesimpulan",
+                question: "Setelah melakukan percobaan dan menganalisis data, langkah selanjutnya dalam metode ilmiah adalah...",
+                options: ["Membuat pertanyaan", "Merumuskan hipotesis", "Menarik kesimpulan", "Melakukan pengamatan baru"],
+                answer: "Menarik kesimpulan"
+            },
+            {
+                topic: "Hipotesis dan Kesimpulan",
+                question: "Kesimpulan harus didasarkan pada...",
+                options: ["Dugaan awal", "Pendapat teman", "Data dan bukti dari percobaan", "Cerita dari buku"],
+                answer: "Data dan bukti dari percobaan"
+            },
+            {
+                topic: "Hipotesis dan Kesimpulan",
+                question: "Pernyataan 'Jika tanaman disiram setiap hari, maka akan tumbuh lebih tinggi' adalah contoh dari...",
+                options: ["Fakta", "Pengamatan", "Kesimpulan", "Hipotesis"],
+                answer: "Hipotesis"
+            },
+            {
+                topic: "Hipotesis dan Kesimpulan",
+                question: "Jika hasil percobaan tidak sesuai dengan hipotesis, apa yang harus dilakukan seorang ilmuwan?",
+                options: ["Mengubah data agar sesuai", "Menyalahkan alat ukur", "Menyatakan percobaan gagal total", "Merevisi hipotesis dan/atau merancang percobaan baru"],
+                answer: "Merevisi hipotesis dan/atau merancang percobaan baru"
+            }
+        ];
+
+        const timeLimitInMinutes = 40;
+        let timeLeft = timeLimitInMinutes * 60; // seconds
+        let timerInterval;
+
+        const quizForm = document.getElementById('quizForm');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const timerDisplay = document.getElementById('timer');
+        const resultsDiv = document.getElementById('results');
+        const resultNama = document.getElementById('resultNama');
+        const scoreDisplay = document.getElementById('score');
+        const messageDisplay = document.getElementById('message');
+        const answerDetailsDiv = document.getElementById('answerDetails');
+
+        // Durasi cooldown: 3 jam dalam milidetik
+        const cooldownDuration = 3 * 60 * 60 * 1000;
+        const lastQuizCompletionKey = 'lastQuizCompletionTime';
+
+        // Fungsi untuk mengacak array (algoritma Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Fungsi untuk menghasilkan dan menampilkan pertanyaan
+        function generateQuestions() {
+            if (questions.length !== 40) {
+                console.error("Jumlah soal tidak sesuai (harus 40).");
+            }
+            
+            shuffleArray(questions);
+            questionsContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                const shuffledOptions = [...q.options];
+                shuffleArray(shuffledOptions);
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${q.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option) => `
+                            <label>
+                                <input type="radio" name="q${index}" value="${option}"> ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Waktu tersisa: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Kuis akan otomatis disubmit.");
+                    quizForm.dispatchEvent(new Event('submit'));
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Penanganan saat formulir disubmit
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            clearInterval(timerInterval);
+
+            let totalScore = 0;
+            const pointsPerCorrect = 2.5; // 100 / 40 soal = 2.5 poin per soal
+            const maxPossibleScore = questions.length * pointsPerCorrect; // 40 * 2.5 = 100
+
+            const answers = {};
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : null;
+                answers[`q${index}`] = userAnswer;
+
+                if (userAnswer === q.answer) {
+                    totalScore += pointsPerCorrect;
+                }
+            });
+
+            // Simpan waktu penyelesaian kuis ke Local Storage
+            localStorage.setItem(lastQuizCompletionKey, Date.now());
+
+            // Tampilkan hasil
+            resultNama.textContent = document.getElementById('nama').value;
+            scoreDisplay.textContent = `${totalScore} / ${maxPossibleScore}`;
+
+            // Tentukan pesan berdasarkan skor
+            if (totalScore >= 70) {
+                messageDisplay.textContent = "Selamat Anda Pemenang";
+                messageDisplay.style.color = "green";
+            } else {
+                messageDisplay.textContent = "Anda Belum Beruntung, Belajar Lagi Ya";
+                messageDisplay.style.color = "red";
+            }
+
+            // Tampilkan detail jawaban
+            answerDetailsDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const userAnswer = answers[`q${index}`];
+                const detailDiv = document.createElement('p');
+                let answerStatusClass = '';
+                let userAnswerText = userAnswer !== null ? userAnswer : 'Tidak dijawab';
+
+                if (userAnswer === q.answer) {
+                    answerStatusClass = 'correct';
+                } else if (userAnswer !== null) {
+                    answerStatusClass = 'incorrect';
+                } else {
+                    answerStatusClass = '';
+                }
+
+                detailDiv.innerHTML = `
+                    <strong>${index + 1}. ${q.question}</strong><br>
+                    Jawaban Anda: <span class="${answerStatusClass}">
+                        ${userAnswerText}
+                    </span><br>
+                    Kunci Jawaban: <span class="correct">${q.answer}</span>
+                `;
+                answerDetailsDiv.appendChild(detailDiv);
+            });
+
+            quizForm.style.display = 'none';
+            resultsDiv.style.display = 'block';
+        });
+
+        // Inisialisasi kuis dan cek cooldown saat halaman dimuat
+        window.onload = function() {
+            const lastCompletionTime = localStorage.getItem(lastQuizCompletionKey);
+            if (lastCompletionTime) {
+                const timeElapsed = Date.now() - parseInt(lastCompletionTime);
+                if (timeElapsed < cooldownDuration) {
+                    const remainingTime = cooldownDuration - timeElapsed;
+                    const minutes = Math.floor(remainingTime / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                    quizForm.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    document.getElementById('timeLimitDisplay').style.display = 'none';
+                    const cooldownMessageDiv = document.createElement('div');
+                    cooldownMessageDiv.classList.add('cooldown-message');
+                    cooldownMessageDiv.innerHTML = `
+                        Anda telah menyelesaikan kuis ini. <br>
+                        Silakan coba lagi dalam **${minutes.toString().padStart(2, '0')} menit dan ${seconds.toString().padStart(2, '0')} detik**.
+                    `;
+                    document.querySelector('.container').insertBefore(cooldownMessageDiv, document.getElementById('quizForm'));
+                    return;
+                }
+            }
+            // Jika tidak ada cooldown atau cooldown sudah berakhir, inisialisasi kuis
+            generateQuestions();
+            startTimer();
+        };
+    </script>
+</body>
+</html>
